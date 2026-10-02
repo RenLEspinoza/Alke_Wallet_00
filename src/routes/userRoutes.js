@@ -7,6 +7,8 @@ const {
   crearUsuarioCompletoORM,
 } = require("../controllers/usersControllerORM");
 
+const { validateLogin } = require("../middlewares/validateInput");
+const { login } = require("../controllers/userController");
 //===========================================================================================
 // RUTAS DE USUARIOS (ORM - Sequelize)
 //===========================================================================================
@@ -18,6 +20,9 @@ router.get("/orm-users/:id", obtenerUsuarioConRelaciones);
 
 // Ruta para crear un usuario junto con sus relaciones (perfil, cuenta y pedidos)
 router.post("/users", crearUsuarioCompletoORM);
+
+// Ruta POST para login de usuario
+router.post("/login", validateLogin, login);
 
 //===========================================================================================
 // RUTAS DE VISTAS (Renderizado de Páginas)

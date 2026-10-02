@@ -1,4 +1,5 @@
 const { User, Account } = require("../models"); // Importa los modelos de Sequelize
+const bcrypt = require("bcryptjs"); // Llamamos a bcryptjs para el hashing de contraseñas
 
 // Función para obtener todos los usuarios usando Sequelize ORM
 const obtenerUsuariosORM = async (req, res) => {
@@ -63,11 +64,17 @@ const crearUsuarioCompletoORM = async (req, res) => {
       });
     }
 
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
     // 1. Crear el usuario y sus registros asociados
     // Opciones de 'include': si no definiste un 'as' en User.hasOne(Account), usa solo [Account]
-    const nuevoUsuario = await User.create(req.body, {
-      include: [Account],
-    });
+    const nuevoUsuario = await User.create(
+      { ...req.body, password: hashedPassword },
+      {
+        include: [Account],
+      },
+    );
 
     // 2. Convertir la instancia de Sequelize a un objeto JSON plano para manipularlo
     const usuarioJSON = nuevoUsuario.toJSON();

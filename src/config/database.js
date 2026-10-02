@@ -10,7 +10,7 @@ const sequelize = new Sequelize(
     port: process.env.DB_PORT || 5433,
     dialect: process.env.DB_DIALECT || "postgres",
     logging: process.env.NODE_ENV === "development" ? console.log : false,
-    logging: console.log, // Muestra las consultas SQL que genera Sequelize en la consola
+    // logging: console.log, // Muestra las consultas SQL que genera Sequelize en la consola
   },
 );
 
@@ -24,6 +24,6 @@ const testConnection = async () => {
   }
 };
 
-testConnection();
+// testConnection();
 
 module.exports = sequelize;

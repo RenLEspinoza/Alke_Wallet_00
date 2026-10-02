@@ -9,15 +9,22 @@
           <div class="alert alert-danger" role="alert">{{error}}</div>
         {{/if}}
 
-        <form action="/login" method="POST">
+        <form id="loginForm" method="POST">
           <div class="mb-3">
             <label class="form-label">Correo Electrónico</label>
-            <input type="email" name="email" class="form-control" required />
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="form-control"
+              required
+            />
           </div>
           <div class="mb-3">
             <label class="form-label">Contraseña</label>
             <input
               type="password"
+              id="password"
               name="password"
               class="form-control"
               required
@@ -37,3 +44,5 @@
     </div>
   </div>
 </div>
+
+<script src="/js/login.js"></script>

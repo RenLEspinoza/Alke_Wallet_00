@@ -39,6 +39,11 @@ app.get("/", (req, res) => {
 // Enrutador principal
 app.use("/", userRoutes);
 
+// // Ruta para el dashboard (vista protegida)
+// app.get("/dashboard", (req, res) => {
+//   res.render("dashboard"); // Renderiza dashboard.handlebars
+// });
+
 // Manejo de errores 404
 app.use((req, res) => {
   res.status(404).render("404", { layout: false });

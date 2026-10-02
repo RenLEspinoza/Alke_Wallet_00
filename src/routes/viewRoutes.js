@@ -6,11 +6,16 @@ const { User, Account, Transaction } = require("../models");
 // 1. DASHBOARD
 router.get("/dashboard", async (req, res) => {
   try {
-    const currentUserId = req.query.userId || 1;
+    // const currentUserId = req.query.user_id || 1; // Para pruebas de desarrollo, se puede cambiar a req.user.id si se implementa autenticación
+    let currentUserId = req.query.user_id;
+
+    if (!currentUserId || currentUserId === "undefined") {
+      currentUserId = 1; // ID por defecto para pruebas
+    }
 
     // Buscar la cuenta del usuario
     const account = await Account.findOne({
-      where: { user_id: currentUserId },
+      where: { user_id: Number(currentUserId) },
       include: [{ model: User }],
     });
 
@@ -66,47 +71,47 @@ router.get("/dashboard", async (req, res) => {
 });
 
 // 2. HISTORIAL COMPLETO DE TRANSACCIONES
-router.get("/transacciones", async (req, res) => {
-  try {
-    const currentUserId = req.query.userId || 1;
+// router.get("/transacciones", async (req, res) => {
+//   try {
+//     const currentUserId = req.query.userId || 1;
 
-    const account = await Account.findOne({
-      where: { user_id: currentUserId },
-    });
-    if (!account) return res.status(404).send("Cuenta no encontrada.");
+//     const account = await Account.findOne({
+//       where: { user_id: currentUserId },
+//     });
+//     if (!account) return res.status(404).send("Cuenta no encontrada.");
 
-    const accountId = account.account_id;
+//     const accountId = account.account_id;
 
-    const transactionsRaw = await Transaction.findAll({
-      where: {
-        [Op.or]: [
-          { sender_account_id: accountId },
-          { receiver_account_id: accountId },
-        ],
-      },
-      order: [["createdAt", "DESC"]],
-      raw: true,
-    });
+//     const transactionsRaw = await Transaction.findAll({
+//       where: {
+//         [Op.or]: [
+//           { sender_account_id: accountId },
+//           { receiver_account_id: accountId },
+//         ],
+//       },
+//       order: [["createdAt", "DESC"]],
+//       raw: true,
+//     });
 
-    const transacciones = transactionsRaw.map((t) => {
-      const esIngreso = t.receiver_account_id === accountId;
-      return {
-        id: t.transaction_id || t.id,
-        concepto: esIngreso
-          ? `Abono desde Cuenta #${t.sender_account_id || "Sistema"}`
-          : `Transferencia a Cuenta #${t.receiver_account_id}`,
-        monto: t.importe || t.monto,
-        fecha: new Date(t.createdAt).toLocaleDateString("es-CL"),
-        esIngreso,
-      };
-    });
+//     const transacciones = transactionsRaw.map((t) => {
+//       const esIngreso = t.receiver_account_id === accountId;
+//       return {
+//         id: t.transaction_id || t.id,
+//         concepto: esIngreso
+//           ? `Abono desde Cuenta #${t.sender_account_id || "Sistema"}`
+//           : `Transferencia a Cuenta #${t.receiver_account_id}`,
+//         monto: t.importe || t.monto,
+//         fecha: new Date(t.createdAt).toLocaleDateString("es-CL"),
+//         esIngreso,
+//       };
+//     });
 
-    res.render("transacciones", { transacciones });
-  } catch (error) {
-    console.error("Error al cargar transacciones:", error);
-    res.status(500).send("Error al obtener el historial: " + error.message);
-  }
-});
+//     res.render("transacciones", { transacciones });
+//   } catch (error) {
+//     console.error("Error al cargar transacciones:", error);
+//     res.status(500).send("Error al obtener el historial: " + error.message);
+//   }
+// });
 
 // 3. VISTAS DE FORMULARIOS
 router.get("/depositar", (req, res) => res.render("depositar"));

@@ -1,0 +1,71 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+
+      <!-- Botón Volver -->
+      <a href="/dashboard" class="btn btn-outline-secondary btn-sm mb-3">
+        ← Volver al Dashboard
+      </a>
+
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0 fs-5"><i class="bi bi-arrow-up-right-circle me-2"></i>
+            Transferir a Terceros</h4>
+        </div>
+        <div class="card-body p-4">
+          <form action="/transferir" method="POST">
+
+            <div class="mb-3">
+              <label for="numeroCuentaDestino" class="form-label fw-semibold">N°
+                de Cuenta Destino</label>
+              <input
+                type="text"
+                class="form-control"
+                id="numeroCuentaDestino"
+                name="numeroCuentaDestino"
+                placeholder="Ej: 12345678"
+                required
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="monto" class="form-label fw-semibold">Monto a
+                transferir</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="monto"
+                  name="monto"
+                  placeholder="Ej: 15000"
+                  min="1"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="concepto" class="form-label fw-semibold">Concepto /
+                Comentario (Opcional)</label>
+              <input
+                type="text"
+                class="form-control"
+                id="concepto"
+                name="concepto"
+                placeholder="Ej: Pago de arriendo, cena, etc."
+              />
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+              <button type="submit" class="btn btn-primary btn-lg">Confirmar
+                Transferencia</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+<div class="row justify-content-center">
+  <div class="col-md-5 col-lg-4">
+    <div class="card shadow-sm border-0 mt-5">
+      <div class="card-body p-4">
+        <h3 class="card-title text-center text-primary mb-4 fw-bold">Iniciar
+          Sesión</h3>
+
+        {{#if error}}
+          <div class="alert alert-danger" role="alert">{{error}}</div>
+        {{/if}}
+
+        <form action="/login" method="POST">
+          <div class="mb-3">
+            <label class="form-label">Correo Electrónico</label>
+            <input type="email" name="email" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Contraseña</label>
+            <input
+              type="password"
+              name="password"
+              class="form-control"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            class="btn btn-primary w-100 fw-bold py-2"
+          >Ingresar</button>
+        </form>
+
+        <div class="text-center mt-3">
+          <small class="text-muted">¿No tienes cuenta?
+            <a href="/register">Regístrate</a></small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

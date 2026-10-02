@@ -1,0 +1,52 @@
+<div class="container mt-4">
+  <!-- Cabecera y Botón Volver -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Historial de Transacciones 📜</h2>
+    <a href="/dashboard" class="btn btn-outline-secondary btn-sm">
+      ← Volver al Dashboard
+    </a>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+      {{#if transacciones.length}}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Detalle / Concepto</th>
+                <th class="text-end">Monto</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each transacciones}}
+                <tr>
+                  <td>#{{this.id}}</td>
+                  <td>{{this.fecha}}</td>
+                  <td>
+                    {{#if this.esIngreso}}
+                      <span class="badge bg-success-subtle text-success border border-success">Ingreso</span>
+                    {{else}}
+                      <span class="badge bg-danger-subtle text-danger border border-danger">Egreso</span>
+                    {{/if}}
+                  </td>
+                  <td>{{this.concepto}}</td>
+                  <td class="text-end fw-bold {{#if this.esIngreso}}text-success{{else}}text-danger{{/if}}">
+                    {{#if this.esIngreso}}+{{else}}-{{/if}}${{this.monto}}
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      {{else}}
+        <div class="p-5 text-center text-muted">
+          <p class="fs-5 mb-0">No se registran transacciones en el historial.</p>
+        </div>
+      {{/if}}
+    </div>
+  </div>
+</div>

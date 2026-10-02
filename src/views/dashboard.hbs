@@ -1,0 +1,74 @@
+<div class="container mt-4">
+  <!-- Cabecera -->
+  <div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+      <h2>¡Hola, {{user.nombre}}! 👋</h2>
+      <a href="/login" class="btn btn-outline-secondary btn-sm">Salir</a>
+    </div>
+  </div>
+
+  <!-- Tarjeta de Saldo Principal -->
+  <div class="row mb-4">
+    <div class="col-md-6 offset-md-3">
+      <div class="card text-center bg-dark text-white shadow-sm p-3">
+        <div class="card-body">
+          <h5 class="card-title text-muted text-uppercase">Saldo Disponible</h5>
+          <h1 class="display-4 fw-bold my-3">${{user.saldo}}</h1>
+          <p class="card-text text-secondary">N° de Cuenta: {{user.numero_cuenta}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botones de Navegación a las 3 Vistas -->
+  <div class="row mb-5 text-center">
+    <div class="col-md-4 mb-2">
+      <a href="/depositar" class="btn btn-success btn-lg w-100 py-3 shadow-sm">
+        <i class="bi bi-arrow-down-circle me-2"></i> Depositar
+      </a>
+    </div>
+    <div class="col-md-4 mb-2">
+      <a href="/transferir" class="btn btn-primary btn-lg w-100 py-3 shadow-sm">
+        <i class="bi bi-arrow-up-right-circle me-2"></i> Transferir
+      </a>
+    </div>
+    <div class="col-md-4 mb-2">
+      <a href="/transacciones" class="btn btn-secondary btn-lg w-100 py-3 shadow-sm">
+        <i class="bi bi-clock-history me-2"></i> Historial
+      </a>
+    </div>
+  </div>
+
+  <!-- Resumen de Últimos Movimientos -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0 fw-bold">Últimos Movimientos</h5>
+          <a href="/transacciones" class="btn btn-sm btn-link">Ver todos</a>
+        </div>
+        <div class="card-body p-0">
+          {{#if transacciones.length}}
+            <ul class="list-group list-group-flush">
+              {{#each transacciones}}
+                <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                  <div>
+                    <h6 class="mb-0 fw-semibold">{{this.concepto}}</h6>
+                    <small class="text-muted">{{this.fecha}}</small>
+                  </div>
+                  <span class="fs-5 fw-bold {{#if this.esIngreso}}text-success{{else}}text-danger{{/if}}">
+                    {{#if this.esIngreso}}+{{else}}-{{/if}}${{this.monto}}
+                  </span>
+                </li>
+              {{/each}}
+            </ul>
+          {{else}}
+            <div class="p-4 text-center text-muted">
+              <p class="mb-0">Aún no registras movimientos en tu cuenta.</p>
+            </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

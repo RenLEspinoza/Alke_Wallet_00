@@ -1,0 +1,48 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+
+      <!-- Botón Volver -->
+      <a href="/dashboard" class="btn btn-outline-secondary btn-sm mb-3">
+        ← Volver al Dashboard
+      </a>
+
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0 fs-5"><i class="bi bi-arrow-down-circle me-2"></i>
+            Depositar en mi Cuenta</h4>
+        </div>
+        <div class="card-body p-4">
+          <form action="/depositar" method="POST">
+
+            <div class="mb-3">
+              <label for="monto" class="form-label fw-semibold">Monto a
+                depositar</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="monto"
+                  name="monto"
+                  placeholder="Ej: 20000"
+                  min="1"
+                  required
+                />
+              </div>
+              <div class="form-text">Ingresa el monto que deseas abonar a tu
+                saldo actual.</div>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+              <button type="submit" class="btn btn-success btn-lg">Realizar
+                Depósito</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -4,6 +4,14 @@ const JWT_SECRET = process.env.JWT_SECRET || "clave_secreta_super_segura";
 function verificarToken(req, res, next) {
   const authHeader = req.headers.authorization; // Obtenemos el authHeader desde req.headers
 
+  if (!token) {
+    // Si no existe el token, retorna error y mensaje.
+    return res.status(401).json({
+      status: "error",
+      message: "Token no proporcionado",
+    });
+  }
+
   if (!authHeader) {
     // Si no existe el authHeader, retorna error y mensaje.
     return res.status(401).json({
@@ -25,7 +33,7 @@ function verificarToken(req, res, next) {
 
   const token = partes[1]; // La parte 1 es nuestra Clave secreta
 
-  jwt.verify(token, JWT_SECRET, (error, usuarioToken) => {
+  jwt.verify(token, JWT_SECRET, (error, decoded) => {
     if (error) {
       return res.status(401).json({
         status: "error",
@@ -33,7 +41,7 @@ function verificarToken(req, res, next) {
       });
     }
 
-    req.usuario = usuarioToken;
+    req.usuario = decoded;
 
     next();
   });

@@ -1,11 +1,11 @@
-const { User, Account } = require("../models"); // Importa los modelos de Sequelize
+const { User, Account, Transaction } = require("../models"); // Importa los modelos de Sequelize
 const bcrypt = require("bcryptjs"); // Llamamos a bcryptjs para el hashing de contraseñas
 
 // Función para obtener todos los usuarios usando Sequelize ORM
 const obtenerUsuariosORM = async (req, res) => {
   try {
     // Uso del método nativo del ORM
-    const usuarios = await users.findAll({
+    const usuarios = await User.findAll({
       attributes: { exclude: ["password"] }, // Excluye campos sensibles directamente desde la BD
     });
 
@@ -23,17 +23,16 @@ const obtenerUsuariosORM = async (req, res) => {
   }
 };
 
-// función para obtener un usuario por su ID junto con sus relaciones (pedidos, perfil y cuenta)
+// Función para obtener un usuario por su ID junto con sus relaciones (pedidos, perfil y cuenta)
 const obtenerUsuarioConRelaciones = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const usuario = await Usuario.findByPk(id, {
-      attributes: { exclude: ["password", "telefono"] }, // Excluye campos sensibles directamente desde la BD
+    const usuario = await User.findByPk(id, {
+      attributes: { exclude: ["password"] }, // Excluye campos sensibles directamente desde la BD
       include: [
-        { model: Pedido, as: "pedidos" },
-        { model: Perfil, as: "perfil" },
-        { model: Cuenta, as: "cuenta" },
+        { model: Account, as: "cuenta" },
+        { model: Transaction, as: "Transacciones" },
       ],
     });
 

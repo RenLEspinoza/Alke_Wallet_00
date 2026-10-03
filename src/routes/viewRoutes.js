@@ -5,17 +5,25 @@ const { User, Account, Transaction } = require("../models");
 
 // 1. DASHBOARD
 router.get("/dashboard", async (req, res) => {
+  console.log("Query Params recibidos:", req.query); // Para depuración
   try {
-    // const currentUserId = req.query.user_id || 1; // Para pruebas de desarrollo, se puede cambiar a req.user.id si se implementa autenticación
-    let currentUserId = req.query.user_id;
+    // PASO 1: Capturar el ID de usuario (o usar 1 de fallback) y convertir a entero
+    const rawUserId = req.query.user_id || req.session?.userId || 1;
 
-    if (!currentUserId || currentUserId === "undefined") {
-      currentUserId = 1; // ID por defecto para pruebas
+    if (!rawUserId) {
+      return res.status(400).send("ID de usuario no proporcionado.");
+      return res.redirect("/login"); // Redirigir a la página de inicio de sesión si no hay ID de usuario
     }
 
-    // Buscar la cuenta del usuario
+    const currentUserId = parseInt(rawUserId, 10);
+
+    if (isNaN(currentUserId)) {
+      return res.status(400).send("ID de usuario inválido.");
+    }
+
+    // PASO 2: Buscar la cuenta del usuario
     const account = await Account.findOne({
-      where: { user_id: Number(currentUserId) },
+      where: { user_id: currentUserId },
       include: [{ model: User }],
     });
 
@@ -25,35 +33,36 @@ router.get("/dashboard", async (req, res) => {
         .send("Cuenta no encontrada para el usuario indicado.");
     }
 
-    // ⚠️ USAMOS account.account_id EN LUGAR DE account.id
-    const accountId = account.account_id;
+    const currentAccountId = account.account_id;
 
-    // Buscar las últimas 5 transacciones
+    // PASO 3: Buscar transacciones usando las columnas REALES (sender_account_id o receiver_account_id)
     const transactionsRaw = await Transaction.findAll({
       where: {
         [Op.or]: [
-          { sender_account_id: accountId },
-          { receiver_account_id: accountId },
+          { sender_account_id: currentAccountId },
+          { receiver_account_id: currentAccountId },
         ],
       },
       order: [["createdAt", "DESC"]],
       limit: 5,
-      raw: true,
     });
 
-    // Formatear movimientos para la plantilla
-    const transacciones = transactionsRaw.map((t) => {
-      const esIngreso = t.receiver_account_id === accountId;
+    // PASO 4: Formatear movimientos de forma segura
+    const transacciones = (transactionsRaw || []).map((t) => {
+      const plain = t.get ? t.get({ plain: true }) : t;
       return {
-        concepto: esIngreso
-          ? `Depósito/Abono recibido (Origen: Cuenta #${t.sender_account_id || "Externa"})`
-          : `Transferencia enviada (Destino: Cuenta #${t.receiver_account_id})`,
-        monto: t.importe || t.monto,
-        fecha: new Date(t.createdAt).toLocaleDateString("es-CL"),
-        esIngreso,
+        id: plain.transaction_id,
+        tipo: plain.type,
+        monto: plain.amount,
+        descripcion: plain.description || "Sin descripción",
+        fecha: plain.createdAt
+          ? new Date(plain.createdAt).toLocaleDateString("es-CL")
+          : "",
+        esEgreso: plain.sender_account_id === currentAccountId, // Saber si la cuenta envió o recibió el monto
       };
     });
 
+    // PASO 5: Renderizar la plantilla Handlebars
     res.render("dashboard", {
       user: {
         nombre: account.User
@@ -62,7 +71,7 @@ router.get("/dashboard", async (req, res) => {
         saldo: account.balance,
         numero_cuenta: account.account_number || account.account_id,
       },
-      transacciones,
+      transacciones: transacciones, // Si no hay registros, pasará un arreglo vacío [] sin romper la app
     });
   } catch (error) {
     console.error("Error al cargar el dashboard:", error);

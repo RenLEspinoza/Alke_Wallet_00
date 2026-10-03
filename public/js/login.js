@@ -1,29 +1,42 @@
+// Lógica para manejar el formulario de inicio de sesión
+
 document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
+  // Obtenemos el formulario por su ID y agregamos un listener para el evento submit
+  e.preventDefault(); // Prevenimos el comportamiento por defecto del formulario (recargar la página)
 
   const formData = {
-    email: document.getElementById("email").value,
-    password: document.getElementById("password").value,
+    email: document.getElementById("email").value, // Obtenemos el valor del campo de email
+    password: document.getElementById("password").value, // Obtenemos el valor del campo de password
   };
 
   try {
     const response = await fetch("/login", {
+      // Hacemos una petición POST al endpoint /login
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({
+        email: formData.email,
+        password: formData.password,
+      }),
     });
 
     const result = await response.json();
 
     if (response.ok) {
-      // Guardar el token para futuras peticiones autenticadas
+      // Guardar el token en localStorage
       localStorage.setItem("token", result.token);
 
-      // Obtener el id de forma segura, ya que puede ser user_id o id dependiendo de la implementación
-      const userId = result.user?.user_id || result.user?.id;
+      // Obtener el ID del usuario (probando las estructuras más comunes de respuesta)
+      const userId = result.user?.user_id || result.user_id || result.user?.id;
 
-      // Redirigir al usuario a la página de dashboard o a otra página protegida
-      window.location.href = "/dashboard"; // Cambia esto a la ruta de tu dashboard
+      if (userId) {
+        // Redirigir enviando el user_id en los query params
+        window.location.href = `/dashboard?user_id=${userId}`;
+      } else {
+        console.error("Respuesta del servidor sin user_id:", result);
+        // Fallback en caso de que la API solo envíe el token
+        window.location.href = "/dashboard";
+      }
     } else {
       alert(result.message || "Error en las credenciales");
     }

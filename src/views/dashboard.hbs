@@ -1,3 +1,12 @@
+<!-- Verificación de Autenticación antes de renderizar la vista -->
+<script>
+  // Validar que exista el token en localStorage
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "/login";
+  }
+</script>
+
 <div class="container mt-4">
   <!-- Cabecera -->
   <div class="row mb-4">

@@ -1,8 +1,24 @@
+<!-- Verificación de Autenticación antes de renderizar la vista -->
+<script>
+  // Validar que exista el token en localStorage
+  const token = localStorage.getItem("token");
+const storedUserId = localStorage.getItem("userId");
+const urlParams = new URLSearchParams(window.location.search);
+const currentUrlUserId = urlParams.get("user_id");
+
+ if (!token || !storedUserId) {
+  window.location.href = "/login";
+}
+if (currentUrlUserId && currentUrlUserId !== storedUserId) {
+  window.location.href = `/dashboard?user_id=${storedUserId}`;
+}
+</script>
+
 <div class="container mt-4">
   <!-- Cabecera y Botón Volver -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Historial de Transacciones 📜</h2>
-    <a href="/dashboard" class="btn btn-outline-secondary btn-sm">
+    <a href="/dashboard?user_id={{user.id}}" class="btn btn-outline-secondary btn-sm">
       ← Volver al Dashboard
     </a>
   </div>

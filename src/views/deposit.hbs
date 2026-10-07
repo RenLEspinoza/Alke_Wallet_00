@@ -1,9 +1,22 @@
+<!-- Verificación de Autenticación antes de renderizar la vista -->
+<script>
+  const token = localStorage.getItem("token"); const storedUserId =
+  localStorage.getItem("userId"); const urlParams = new
+  URLSearchParams(window.location.search); const currentUrlUserId =
+  urlParams.get("user_id"); if (!token || !storedUserId) { window.location.href
+  = "/login"; } if (currentUrlUserId && currentUrlUserId !== storedUserId) {
+  window.location.href = `/dashboard?user_id=${storedUserId}`; }
+</script>
+
 <div class="container mt-4">
   <div class="row justify-content-center">
     <div class="col-md-6">
 
       <!-- Botón Volver -->
-      <a href="/dashboard" class="btn btn-outline-secondary btn-sm mb-3">
+      <a
+        href="/dashboard?user_id={{user.id}}"
+        class="btn btn-outline-secondary btn-sm mb-3"
+      >
         ← Volver al Dashboard
       </a>
 
@@ -13,20 +26,21 @@
             Depositar en mi Cuenta</h4>
         </div>
         <div class="card-body p-4">
-          <form action="/depositar" method="POST">
+          <form id="depositForm">
 
             <div class="mb-3">
-              <label for="monto" class="form-label fw-semibold">Monto a
+              <label for="amount" class="form-label fw-semibold">Monto a
                 depositar</label>
               <div class="input-group">
                 <span class="input-group-text">$</span>
                 <input
                   type="number"
                   class="form-control"
-                  id="monto"
+                  id="amount"
                   name="monto"
                   placeholder="Ej: 20000"
                   min="1"
+                  step="0.01"
                   required
                 />
               </div>
@@ -39,6 +53,7 @@
                 Depósito</button>
             </div>
 
+            <div id="feedbackMessage" class="mt-3" style="display: none;"></div>
           </form>
         </div>
       </div>
@@ -46,3 +61,5 @@
     </div>
   </div>
 </div>
+
+<script src="/js/deposit.js"></script>

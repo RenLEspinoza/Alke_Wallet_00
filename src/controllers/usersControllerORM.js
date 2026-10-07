@@ -29,11 +29,8 @@ const obtenerUsuarioConRelaciones = async (req, res) => {
     const { id } = req.params;
 
     const usuario = await User.findByPk(id, {
-      attributes: { exclude: ["password"] }, // Excluye campos sensibles directamente desde la BD
-      include: [
-        { model: Account, as: "cuenta" },
-        { model: Transaction, as: "Transacciones" },
-      ],
+      attributes: { exclude: ["password"] }, // Asegúrate de que esté dentro de un objeto
+      include: [{ model: Account, as: "Account" }],
     });
 
     if (!usuario) {
@@ -69,9 +66,17 @@ const crearUsuarioCompletoORM = async (req, res) => {
     // 1. Crear el usuario y sus registros asociados
     // Opciones de 'include': si no definiste un 'as' en User.hasOne(Account), usa solo [Account]
     const nuevoUsuario = await User.create(
-      { ...req.body, password: hashedPassword },
       {
-        include: [Account],
+        ...req.body,
+        password: hashedPassword,
+        Account: {
+          account_number: `ACC-${Date.now()}`,
+          balance: 0,
+          currency_id: 1, // Asegúrate de pasar el ID de la moneda existente
+        },
+      },
+      {
+        include: [{ model: Account, as: "Account" }],
       },
     );
 
@@ -123,8 +128,135 @@ const crearUsuarioCompletoORM = async (req, res) => {
   }
 };
 
+// Función para actualizar email de un usuario
+const actualizarEmailUsuario = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { email } = req.body;
+
+    const user = await User.findByPk(id);
+
+    if (!user) {
+      return res.status(404).json({
+        mensaje: "Usuario no encontrado.",
+      });
+    }
+
+    user.email = email;
+    await user.save();
+
+    return res.status(200).json({
+      mensaje: "Email actualizado correctamente.",
+      usuario: user,
+    });
+  } catch (error) {
+    console.error("Error al actualizar el email del usuario:", error);
+    return res.status(500).json({
+      mensaje: "Error interno del servidor",
+      error: error.message,
+    });
+  }
+};
+
+// Función para cambiar el nombre y apellido de un usuario
+const actualizarNombreApellidoUsuario = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { first_name, last_name } = req.body;
+
+    const user = await User.findByPk(id);
+
+    if (!user) {
+      return res.status(404).json({
+        mensaje: "Usuario no encontrado.",
+      });
+    }
+
+    user.first_name = first_name;
+    user.last_name = last_name;
+    await user.save();
+
+    return res.status(200).json({
+      mensaje: "Nombre y apellido actualizados correctamente.",
+      usuario: user,
+    });
+  } catch (error) {
+    console.error(
+      "Error al actualizar el nombre y apellido del usuario:",
+      error,
+    );
+    return res.status(500).json({
+      mensaje: "Error interno del servidor",
+      error: error.message,
+    });
+  }
+};
+
+// Función para obtener el saldo (balance) del usuario autenticado
+const obtenerBalance = async (req, res) => {
+  try {
+    // const userId = req.usuario.userId; // Obtenemos el ID del usuario desde el token decodificado
+    const { id } = req.params; // desde params para pruebas
+    // Buscar el usuario con su cuenta asociada
+    const user = await User.findByPk(id, {
+      include: [{ model: Account, as: "Account" }],
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        mensaje: "Usuario no encontrado.",
+      });
+    }
+
+    // Devolver el saldo del usuario
+    return res.status(200).json({
+      balance: user.Account.balance,
+    });
+  } catch (error) {
+    console.error("Error al obtener el saldo:", error);
+    return res.status(500).json({
+      mensaje: "Error interno del servidor",
+      error: error.message,
+    });
+  }
+};
+
+// Función para eliminar un usuario
+const eliminarUsuario = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findByPk(id);
+
+    if (!user) {
+      return res.status(404).json({
+        status: "error",
+        mensaje: "Usuario no encontrado.",
+      });
+    }
+
+    await user.destroy();
+
+    return res.status(200).json({
+      status: "success",
+      mensaje: "Usuario eliminado correctamente.",
+    });
+  } catch (error) {
+    console.error("Error al eliminar el usuario:", error);
+    return res.status(500).json({
+      status: "error",
+      mensaje: "Error interno del servidor",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   obtenerUsuariosORM,
   obtenerUsuarioConRelaciones,
   crearUsuarioCompletoORM,
+  obtenerBalance,
+  actualizarEmailUsuario,
+  actualizarNombreApellidoUsuario,
+  eliminarUsuario,
 };

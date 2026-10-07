@@ -21,6 +21,34 @@ const Transaction = sequelize.define(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
+    // Claves foráneas
+    sender_account_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true, // Null para depósitos desde fuera
+      field: "sender_account_id",
+      references: {
+        model: "accounts",
+        key: "account_id",
+      },
+    },
+    receiver_account_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true, // Null para retiros hacia fuera
+      field: "receiver_account_id",
+      references: {
+        model: "accounts",
+        key: "account_id",
+      },
+    },
+    currency_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "currency_id",
+      references: {
+        model: "currencies",
+        key: "currency_id",
+      },
+    },
   },
   {
     tableName: "transactions",

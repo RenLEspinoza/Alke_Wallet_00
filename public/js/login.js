@@ -30,6 +30,7 @@ document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
       const userId = result.user?.user_id || result.user_id || result.user?.id;
 
       if (userId) {
+        localStorage.setItem("userId", userId);
         // Redirigir enviando el user_id en los query params
         window.location.href = `/dashboard?user_id=${userId}`;
       } else {

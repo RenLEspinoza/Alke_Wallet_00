@@ -8,6 +8,7 @@ const Currency = sequelize.define(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      defaultValue: 1,
     },
     code: {
       type: DataTypes.STRING(10),

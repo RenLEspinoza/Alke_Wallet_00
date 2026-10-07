@@ -1,4 +1,6 @@
 const sequelize = require("../config/database");
+
+// Importar los modelos directamente (sin pasar sequelize ni DataTypes como función)
 const User = require("./User");
 const Currency = require("./Currency");
 const Account = require("./Account");

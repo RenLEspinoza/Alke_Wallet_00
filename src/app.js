@@ -13,7 +13,13 @@ const userRoutes = require("./routes/userRoutes");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// configuración de Handlebars como motor de plantillas
+app.use((req, res, next) => {
+  res.locals.authenticated = req.session?.user ? true : false;
+  res.locals.user = req.session?.user || null;
+  next();
+});
+
+// Configuración de Handlebars
 app.engine(
   ".hbs",
   engine({
@@ -26,16 +32,21 @@ app.engine(
 app.set("view engine", ".hbs");
 app.set("views", path.join(__dirname, "views"));
 
-// Middlewares
+// Middlewares base
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "../public"))); // Archivos estáticos
 
-// Middleware global para habilitar la subida de archivos
+// --- ARCHIVOS ESTÁTICOS (Irá a buscar imágenes y assets aquí primero) ---
+app.use(express.static(path.join(__dirname, "../public")));
+
+// Middleware para servir archivos subidos
+app.use(express.static(path.join(__dirname, "uploads")));
+
+// Middleware global para subida de archivos
 app.use(
   fileUpload({
-    createParentPath: true, // Crea automáticamente las carpetas si no existen
-    limits: { fileSize: 10 * 1024 * 1024 }, // Límite por ejemplo: 10MB
+    createParentPath: true,
+    limits: { fileSize: 10 * 1024 * 1024 },
   }),
 );
 
@@ -44,17 +55,11 @@ app.get("/", (req, res) => {
   res.render("home");
 });
 
-// Enrutador principal
+// Enrutadores principales
 app.use("/", userRoutes);
 app.use("/", viewRoutes);
 app.use("/", documentRoutes);
-
-// // Ruta para el dashboard (vista protegida)
-// app.get("/dashboard", (req, res) => {
-//   res.render("dashboard"); // Renderiza dashboard.handlebars
-// });
-
-app.use(express.static("uploads"));
+app.use("/api", require("./routes/apiRoutes"));
 
 // Manejo de errores 404
 app.use((req, res) => {
@@ -65,13 +70,13 @@ app.use((req, res) => {
 const startServer = async () => {
   try {
     await sequelize.authenticate();
-    console.log(" Conexión con PostgreSQL verificada correctamente.");
+    console.log("Conexión con PostgreSQL verificada correctamente.");
 
     app.listen(PORT, () => {
-      console.log(` Servidor corriendo en http://localhost:${PORT}`);
+      console.log(`Servidor corriendo en http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error(" Error al conectar con PostgreSQL:", error);
+    console.error("Error al conectar con PostgreSQL:", error);
   }
 };
 

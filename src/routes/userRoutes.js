@@ -5,32 +5,41 @@ const {
   obtenerUsuariosORM,
   obtenerUsuarioConRelaciones,
   crearUsuarioCompletoORM,
+  obtenerBalance,
+  actualizarEmailUsuario,
+  actualizarNombreApellidoUsuario,
+  eliminarUsuario,
 } = require("../controllers/usersControllerORM");
 
+const { verificarToken } = require("../middlewares/authMiddleware");
 const { validateLogin } = require("../middlewares/validateInput");
 const { login } = require("../controllers/userController");
 //===========================================================================================
 // RUTAS DE USUARIOS (ORM - Sequelize)
 //===========================================================================================
-// Ruta Users usando ORM (Sequelize)
+
+// Ruta para obtener todos los usuarios
 router.get("/orm-users", obtenerUsuariosORM);
 
-// Ruta para obtener un usuario por su ID junto con sus relaciones (pedidos, perfil y cuenta)
+// Ruta para obtener un usuario por su ID junto con su o sus relaciones (Por ahora solo account, eventualmente transacciones y contactos)
 router.get("/orm-users/:id", obtenerUsuarioConRelaciones);
 
-// Ruta para crear un usuario junto con sus relaciones (perfil, cuenta y pedidos)
+// Ruta GET para obtener el saldo (balance) de la cuenta (account) del usuario.
+router.get("/balance/:id", obtenerBalance);
+
+// Ruta para crear un user completo
 router.post("/users", crearUsuarioCompletoORM);
 
-// Ruta POST para login de usuario
+// Ruta POST para login de usuario (incluye validacion básica de email y password)
 router.post("/login", validateLogin, login);
 
-//===========================================================================================
-// RUTAS DE VISTAS (Renderizado de Páginas)
-//===========================================================================================
+// Ruta PUT para actualizar el email del usuario
+router.put("/users/:id/email", verificarToken, actualizarEmailUsuario);
 
-// Rutas GET (Renderizado de Vistas)
-router.get("/", (req, res) => res.render("home"));
-router.get("/login", (req, res) => res.render("login"));
-router.get("/register", (req, res) => res.render("register"));
+// Ruta PUT para actualizar el nombre y apellido de un usuario
+router.put("/users/:id/name", verificarToken, actualizarNombreApellidoUsuario);
+
+// Ruta DELETE para eliminar un usuario
+router.delete("/users/:id", verificarToken, eliminarUsuario);
 
 module.exports = router;

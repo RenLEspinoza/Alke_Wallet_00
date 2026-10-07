@@ -19,6 +19,23 @@ const Account = sequelize.define(
       allowNull: false,
       defaultValue: 0.0,
     },
+    // Claves foráneas declaradas explícitamente
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "users",
+        key: "user_id",
+      },
+    },
+    currency_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "currencies",
+        key: "currency_id",
+      },
+    },
   },
   {
     tableName: "accounts",

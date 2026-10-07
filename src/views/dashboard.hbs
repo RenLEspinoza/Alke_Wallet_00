@@ -1,18 +1,58 @@
-<!-- Verificación de Autenticación antes de renderizar la vista -->
-<script>
-  // Validar que exista el token en localStorage
-  const token = localStorage.getItem("token");
-  if (!token) {
-    window.location.href = "/login";
-  }
-</script>
+<script src="/js/dashboard.js"></script>
 
 <div class="container mt-4">
   <!-- Cabecera -->
   <div class="row mb-4">
     <div class="col-12 d-flex justify-content-between align-items-center">
-      <h2>¡Hola, {{user.nombre}}! 👋</h2>
+      <div class="d-flex align-items-center gap-3">
+        <!-- Avatar con botón para cambiar foto -->
+        <div class="position-relative">
+          <img 
+            src="{{user.avatar}}" 
+            alt="Foto de perfil" 
+            class="rounded-circle shadow-sm" 
+            style="width: 60px; height: 60px; object-fit: cover;"
+          />
+          <button 
+            type="button" 
+            class="btn btn-sm btn-primary position-absolute bottom-0 end-0 rounded-circle p-1" 
+            data-bs-toggle="modal" 
+            data-bs-target="#uploadModal"
+            title="Cambiar foto"
+            style="width: 24px; height: 24px; line-height: 12px; font-size: 10px;"
+          >
+            📷
+          </button>
+        </div>
+
+        <h2 class="mb-0">¡Hola, {{user.nombre}}! 👋</h2>
+      </div>
       <a href="/login" class="btn btn-outline-secondary btn-sm">Salir</a>
+    </div>
+  </div>
+
+  <!-- Modal para subir foto de perfil -->
+  <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="uploadModalLabel">Actualizar foto de perfil</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/upload/avatar" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="user_id" value="{{user.id}}">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="archivo" class="form-label">Selecciona una imagen (PNG, JPG)</label>
+              <input class="form-control" type="file" id="archivo" name="archivo" accept="image/*" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar foto</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -32,17 +72,17 @@
   <!-- Botones de Navegación a las 3 Vistas -->
   <div class="row mb-5 text-center">
     <div class="col-md-4 mb-2">
-      <a href="/depositar" class="btn btn-success btn-lg w-100 py-3 shadow-sm">
+      <a href="/deposit?user_id={{user.id}}" class="btn btn-success btn-lg w-100 py-3 shadow-sm">
         <i class="bi bi-arrow-down-circle me-2"></i> Depositar
       </a>
     </div>
     <div class="col-md-4 mb-2">
-      <a href="/transferir" class="btn btn-primary btn-lg w-100 py-3 shadow-sm">
+      <a href="/transfer?user_id={{user.id}}" class="btn btn-primary btn-lg w-100 py-3 shadow-sm">
         <i class="bi bi-arrow-up-right-circle me-2"></i> Transferir
       </a>
     </div>
     <div class="col-md-4 mb-2">
-      <a href="/transacciones" class="btn btn-secondary btn-lg w-100 py-3 shadow-sm">
+      <a href="/transactions?user_id={{user.id}}" class="btn btn-secondary btn-lg w-100 py-3 shadow-sm">
         <i class="bi bi-clock-history me-2"></i> Historial
       </a>
     </div>

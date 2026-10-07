@@ -14,12 +14,20 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
       <div class="container">
-        <a class="navbar-brand fw-bold" href="/">AlkeWallet</a>
-        <div>
-          <a href="/login" class="btn btn-outline-light btn-sm me-2">Iniciar
-            Sesión</a>
-          <a href="/register" class="btn btn-warning btn-sm">Registrarse</a>
-        </div>
+        {{#if authenticated}}
+          <a class="navbar-brand fw-bold" href="/dashboard">AlkeWallet</a>
+          <div>
+            <span class="text-white me-3">Bienvenido, {{user.nombre}}</span>
+            <a href="/logout" class="btn btn-outline-light btn-sm">Cerrar Sesión</a>
+          </div>
+        {{else}}
+          <a class="navbar-brand fw-bold" href="/">AlkeWallet</a>
+          <div>
+            <a href="/login" class="btn btn-outline-light btn-sm me-2">Iniciar
+              Sesión</a>
+            <a href="/register" class="btn btn-warning btn-sm">Registrarse</a>
+          </div>
+        {{/if}}
       </div>
     </nav>
 
